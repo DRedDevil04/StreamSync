@@ -13,7 +13,8 @@
     "sourceMap": true,
     "baseUrl": "types",
     "typeRoots": ["types"],
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "esModuleInterop": true
   },
   "include": ["src/**/*", "node_modules/@types/mocha/index.d.ts"],
 

@@ -1,5 +1,5 @@
 // router.ts
-import express from "express";
+import * as express from "express";
 
 import videoRoutes from "./routes/VideoRouter";
 

@@ -1,32 +1,23 @@
 // services/videoService.ts
 import fs from "fs";
+import path from "path";
 
-interface VideoStream {
-  start: number;
-  end: number;
-  contentLength: number;
-  contentType: string;
-  stream: fs.ReadStream;
-}
+export const getHlsFileStream = (fileName: string) => {
+  const filePath = path.join(__dirname, "../../videos", fileName);
 
-export const getVideoStreamRange = (
-  videoPath: string,
-  rangeHeader: string
-): VideoStream => {
-  const videoSize = fs.statSync(videoPath).size;
+  if (!fs.existsSync(filePath)) {
+    throw new Error("File not found");
+  }
 
-  const parts = rangeHeader.replace(/bytes=/, "").split("-");
-  const start = parseInt(parts[0], 10);
-  const end = parts[1] ? parseInt(parts[1], 10) : videoSize - 1;
+  const stream = fs.createReadStream(filePath);
+  const ext = path.extname(fileName);
 
-  const contentLength = end - start + 1;
-  const stream = fs.createReadStream(videoPath, { start, end });
+  let contentType = "application/octet-stream";
+  if (ext === ".m3u8") {
+    contentType = "application/vnd.apple.mpegurl";
+  } else if (ext === ".ts") {
+    contentType = "video/MP2T";
+  }
 
-  return {
-    start,
-    end,
-    contentLength,
-    contentType: "video/mp4", // you can dynamically detect with mime-types lib
-    stream,
-  };
+  return { stream, contentType };
 };
