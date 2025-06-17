@@ -1,16 +1,15 @@
 // controllers/videoController.ts
 import { Request, Response } from "express";
-import { getHlsFileStream } from "../services/VideoService";
+import path from "path";
 
-export const streamHlsVideo = (req: Request, res: Response): void => {
-  const fileName = req.params.filename;
+export const getVideo = (req: Request, res: Response) => {
+  const { videoName } = req.params;
+  const filePath = path.resolve(__dirname, "../../..", "videos/hls", videoName);
 
-  try {
-    const { stream, contentType } = getHlsFileStream(fileName);
-
-    res.setHeader("Content-Type", contentType);
-    stream.pipe(res);
-  } catch (error) {
-    res.status(404).json({ error: "File not found" });
-  }
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error("Error serving file:", err);
+      res.status(404).send("File not found");
+    }
+  });
 };
