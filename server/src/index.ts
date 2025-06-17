@@ -3,7 +3,12 @@ import http from "http";
 import { Server as SocketIOServer } from "socket.io";
 import * as dotenv from "dotenv";
 import routes from "./router";
+<<<<<<< HEAD
+import "./config/dbConfig.js"; // adjust path as needed
+import PlaybackEvents from "./sockets/PlaybackEvents.js"; // adjust path as needed
+=======
 import { connectToDatabase } from "./config/dbConfig";
+>>>>>>> bc3ede2cf711a3a12a628ea6196bc45a7f509a9c
 import cors from "cors";
 import { authenticate } from "./middleware/AuthMiddleware";
 
@@ -44,25 +49,7 @@ app.use("/videos", express.static("videos"));
 app.use(express.static("public"));
 
 // Socket.IO handlers
-io.on("connection", (socket) => {
-  console.log("🔌 Client connected:", socket.id);
-
-  socket.on("play", () => {
-    socket.broadcast.emit("play");
-  });
-
-  socket.on("pause", () => {
-    socket.broadcast.emit("pause");
-  });
-
-  socket.on("seek", (time: number) => {
-    socket.broadcast.emit("seek", time);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("❌ Client disconnected:", socket.id);
-  });
-});
+PlaybackEvents(io);
 
 server.listen(port, () => {
   console.log(`🚀 Server running at http://localhost:${port}`);
