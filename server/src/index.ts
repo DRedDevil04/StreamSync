@@ -3,14 +3,25 @@ import http from "http";
 import { Server as SocketIOServer } from "socket.io";
 import * as dotenv from "dotenv";
 import routes from "./router";
+<<<<<<< HEAD
 import "./config/dbConfig.js"; // adjust path as needed
 import PlaybackEvents from "./sockets/PlaybackEvents.js"; // adjust path as needed
+=======
+import { connectToDatabase } from "./config/dbConfig";
+>>>>>>> bc3ede2cf711a3a12a628ea6196bc45a7f509a9c
 import cors from "cors";
 
 dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
+
+const dbUrl = process.env.DB_URL;
+if (!dbUrl) {
+  console.error("❌ DB_URL is not defined in the environment variables");
+  process.exit(1);
+}
+connectToDatabase(dbUrl);
 
 app.use(cors());
 
