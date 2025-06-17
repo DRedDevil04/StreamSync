@@ -5,6 +5,7 @@ import * as dotenv from "dotenv";
 import routes from "./router";
 import { connectToDatabase } from "./config/dbConfig";
 import cors from "cors";
+import { authenticate } from "./middleware/AuthMiddleware";
 
 dotenv.config();
 
@@ -34,7 +35,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // API routes
-app.use("/api", routes);
+app.use("/api",authenticate ,routes);
 
 // Optional: Serve video files statically (if needed)
 app.use("/videos", express.static("videos"));

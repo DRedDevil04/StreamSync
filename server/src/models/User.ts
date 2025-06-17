@@ -27,18 +27,6 @@ const UserSchema = new mongoose.Schema(
       },
     ],
 
-    groups: [
-      {
-        name: String,
-        members: [
-          {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-          },
-        ],
-      },
-    ],
-
     watchedMovies: [
       {
         movieId: String,
