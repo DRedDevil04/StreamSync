@@ -1,3 +1,4 @@
+import mongoose from "../config/dbConfig";
 
 const RoomSchema = new mongoose.Schema({
   roomId: {
@@ -31,4 +32,4 @@ const RoomSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Room", RoomSchema);
+export default mongoose.model("Room", RoomSchema);

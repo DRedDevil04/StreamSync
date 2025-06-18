@@ -1,3 +1,5 @@
+import mongoose from "../config/dbConfig";
+
 const GroupSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -29,4 +31,4 @@ const GroupSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Group", GroupSchema);
+export default mongoose.model("Group", GroupSchema);

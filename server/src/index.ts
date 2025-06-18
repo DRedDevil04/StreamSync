@@ -3,14 +3,9 @@ import http from "http";
 import { Server as SocketIOServer } from "socket.io";
 import * as dotenv from "dotenv";
 import routes from "./router";
-<<<<<<< HEAD
-import "./config/dbConfig.js"; // adjust path as needed
+import { connectToDatabase } from "./config/dbConfig"; // adjust path as needed
 import PlaybackEvents from "./sockets/PlaybackEvents.js"; // adjust path as needed
-=======
-import { connectToDatabase } from "./config/dbConfig";
->>>>>>> bc3ede2cf711a3a12a628ea6196bc45a7f509a9c
 import cors from "cors";
-import { authenticate } from "./middleware/AuthMiddleware";
 
 dotenv.config();
 
@@ -40,7 +35,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // API routes
-app.use("/api",authenticate ,routes);
+app.use("/api", routes);
 
 // Optional: Serve video files statically (if needed)
 app.use("/videos", express.static("videos"));

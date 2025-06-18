@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+export default mongoose;
 /**
  * Connects to the MongoDB database using the provided URL.
  * @param {string} dbUrl - The MongoDB connection string.

@@ -1,3 +1,5 @@
+import mongoose from "../config/dbConfig";
+
 const TagSchema = new mongoose.Schema({
   movieId: {
     type: String,
@@ -31,4 +33,4 @@ const TagSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Tag", TagSchema);
+export default mongoose.model("Tag", TagSchema);

@@ -1,3 +1,5 @@
+import mongoose from "../config/dbConfig";
+
 const MovieSchema = new mongoose.Schema({
   movieId: String, // unique ID
   title: String,
@@ -8,4 +10,4 @@ const MovieSchema = new mongoose.Schema({
   duration: Number, // in minutes
 });
 
-module.exports = mongoose.model("Movie", MovieSchema);
+export default mongoose.model("Movie", MovieSchema);

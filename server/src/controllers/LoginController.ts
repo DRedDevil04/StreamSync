@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
-// Mock user database (replace with actual database logic)
-const users: { username: string; password: string }[] = [];
+import User from "../models/User"; 
 
 /**
  * Logs in a user.
@@ -16,8 +14,9 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  // Find the user
-  const user = users.find((user) => user.username === username);
+try {
+  // Find the user in the database
+  const user = await User.findOne({ username });
   if (!user) {
     res.status(401).json({ message: "Invalid credentials" });
     return;
@@ -31,7 +30,17 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
   }
 
   // Generate a JWT token
-  const token = jwt.sign({ username }, "your_jwt_secret", { expiresIn: "1h" });
+  const token = jwt.sign(
+    { id: user._id, username: user.username },
+    process.env.JWT_SECRET!,
+    {
+      expiresIn: "1h",
+    }
+  );
 
   res.status(200).json({ message: "Login successful", token });
+} catch (error) {
+  console.error("Error logging in user:", error);
+  res.status(500).json({ message: "Internal server error" });
+}
 };
