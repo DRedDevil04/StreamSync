@@ -13,6 +13,7 @@ const app = express();
 const server = http.createServer(app);
 
 const dbUrl = process.env.DB_URL;
+console.log(process.env);
 if (!dbUrl) {
   console.error("❌ DB_URL is not defined in the environment variables");
   process.exit(1);
