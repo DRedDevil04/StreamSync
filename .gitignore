@@ -136,3 +136,10 @@ dist
 .pnp.*
 
 videos/*
+
+movies.csv
+interactions.csv
+users.csv
+model.pkl
+dataset.pkl
+venv

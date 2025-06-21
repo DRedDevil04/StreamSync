@@ -12,7 +12,8 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-const dbUrl = process.env.DB_URL;
+const dbUrl ="mongodb+srv://nitu:hello%40123@streamsync.5fuvctt.mongodb.net/?retryWrites=true&w=majority&appName=StreamSync"
+
 if (!dbUrl) {
   console.error("❌ DB_URL is not defined in the environment variables");
   process.exit(1);
