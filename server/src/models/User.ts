@@ -29,7 +29,10 @@ const UserSchema = new mongoose.Schema(
 
     watchedMovies: [
       {
-        movieId: String,
+        movie: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Movie", // Reference to the Movie model
+        },
         mode: {
           type: String,
           enum: ["private", "public"],

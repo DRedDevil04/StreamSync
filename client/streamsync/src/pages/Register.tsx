@@ -1,35 +1,69 @@
-import React, { useState } from 'react';
-import { Eye, EyeOff, User, Mail, Lock, Tv, ArrowRight } from 'lucide-react';
+import React, { useState } from "react";
+import { Eye, EyeOff, User, Mail, Lock, Tv, ArrowRight } from "lucide-react";
+import axios from "axios";
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
-  const [focusedField, setFocusedField] = useState('');
+  const [focusedField, setFocusedField] = useState("");
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    console.log('Registration data:', formData);
-    // Handle registration logic here
+
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    } 
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/register",
+        {
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+        }
+      );
+
+      console.log("✅ Registration successful:", response.data);
+      alert("Registration successful! Please log in.");
+      document.location.href = "/login"; // Redirect to login page after successful registration
+      // You can redirect or show a success message here
+    } catch (error: any) {
+      console.error(
+        "❌ Registration error:",
+        error.response?.data || error.message
+      );
+      alert(
+        "Registration failed. " +
+          (error.response?.data?.message || error.message)
+      );
+    }
+  };
+
+  const handleSignIn = () => {
+    // Redirect to sign-in page or handle sign-in logic
+    console.log("Redirecting to sign-in page...");
+    document.location.href = "/login";
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-8">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_50%)]"></div>
-      
+
       <div className="relative w-full max-w-md">
         {/* Logo/Brand Section */}
         <div className="text-center mb-8">
@@ -54,13 +88,15 @@ const RegisterPage = () => {
                   <input
                     type="text"
                     value={formData.username}
-                    onChange={(e) => handleInputChange('username', e.target.value)}
-                    onFocus={() => setFocusedField('username')}
-                    onBlur={() => setFocusedField('')}
+                    onChange={(e) =>
+                      handleInputChange("username", e.target.value)
+                    }
+                    onFocus={() => setFocusedField("username")}
+                    onBlur={() => setFocusedField("")}
                     className={`w-full pl-10 pr-4 py-3 bg-slate-700/50 border rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-all duration-200 ${
-                      focusedField === 'firstName' 
-                        ? 'border-blue-500 focus:ring-blue-500/20 bg-slate-700/80' 
-                        : 'border-slate-600 hover:border-slate-500'
+                      focusedField === "firstName"
+                        ? "border-blue-500 focus:ring-blue-500/20 bg-slate-700/80"
+                        : "border-slate-600 hover:border-slate-500"
                     }`}
                     placeholder="John"
                   />
@@ -78,13 +114,13 @@ const RegisterPage = () => {
                 <input
                   type="email"
                   value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  onFocus={() => setFocusedField('email')}
-                  onBlur={() => setFocusedField('')}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  onFocus={() => setFocusedField("email")}
+                  onBlur={() => setFocusedField("")}
                   className={`w-full pl-10 pr-4 py-3 bg-slate-700/50 border rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-all duration-200 ${
-                    focusedField === 'email' 
-                      ? 'border-blue-500 focus:ring-blue-500/20 bg-slate-700/80' 
-                      : 'border-slate-600 hover:border-slate-500'
+                    focusedField === "email"
+                      ? "border-blue-500 focus:ring-blue-500/20 bg-slate-700/80"
+                      : "border-slate-600 hover:border-slate-500"
                   }`}
                   placeholder="john.doe@example.com"
                 />
@@ -101,13 +137,15 @@ const RegisterPage = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
-                  onChange={(e) => handleInputChange('password', e.target.value)}
-                  onFocus={() => setFocusedField('password')}
-                  onBlur={() => setFocusedField('')}
+                  onChange={(e) =>
+                    handleInputChange("password", e.target.value)
+                  }
+                  onFocus={() => setFocusedField("password")}
+                  onBlur={() => setFocusedField("")}
                   className={`w-full pl-10 pr-12 py-3 bg-slate-700/50 border rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-all duration-200 ${
-                    focusedField === 'password' 
-                      ? 'border-blue-500 focus:ring-blue-500/20 bg-slate-700/80' 
-                      : 'border-slate-600 hover:border-slate-500'
+                    focusedField === "password"
+                      ? "border-blue-500 focus:ring-blue-500/20 bg-slate-700/80"
+                      : "border-slate-600 hover:border-slate-500"
                   }`}
                   placeholder="Create a secure password"
                 />
@@ -116,7 +154,11 @@ const RegisterPage = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-300 transition-colors"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
             </div>
@@ -131,13 +173,15 @@ const RegisterPage = () => {
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   value={formData.confirmPassword}
-                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                  onFocus={() => setFocusedField('confirmPassword')}
-                  onBlur={() => setFocusedField('')}
+                  onChange={(e) =>
+                    handleInputChange("confirmPassword", e.target.value)
+                  }
+                  onFocus={() => setFocusedField("confirmPassword")}
+                  onBlur={() => setFocusedField("")}
                   className={`w-full pl-10 pr-12 py-3 bg-slate-700/50 border rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-all duration-200 ${
-                    focusedField === 'confirmPassword' 
-                      ? 'border-blue-500 focus:ring-blue-500/20 bg-slate-700/80' 
-                      : 'border-slate-600 hover:border-slate-500'
+                    focusedField === "confirmPassword"
+                      ? "border-blue-500 focus:ring-blue-500/20 bg-slate-700/80"
+                      : "border-slate-600 hover:border-slate-500"
                   }`}
                   placeholder="Confirm your password"
                 />
@@ -146,7 +190,11 @@ const RegisterPage = () => {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-300 transition-colors"
                 >
-                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
             </div>
@@ -158,8 +206,18 @@ const RegisterPage = () => {
                 id="terms"
                 className="w-5 h-5 rounded border-slate-600 bg-slate-700 text-blue-500 focus:ring-blue-500 focus:ring-2 focus:ring-offset-0 mt-0.5"
               />
-              <label htmlFor="terms" className="text-slate-300 text-sm leading-relaxed">
-                I agree to the <span className="text-blue-400 hover:text-blue-300 cursor-pointer">Terms of Service</span> and <span className="text-blue-400 hover:text-blue-300 cursor-pointer">Privacy Policy</span>
+              <label
+                htmlFor="terms"
+                className="text-slate-300 text-sm leading-relaxed"
+              >
+                I agree to the{" "}
+                <span className="text-blue-400 hover:text-blue-300 cursor-pointer">
+                  Terms of Service
+                </span>{" "}
+                and{" "}
+                <span className="text-blue-400 hover:text-blue-300 cursor-pointer">
+                  Privacy Policy
+                </span>
               </label>
             </div>
 
@@ -167,6 +225,7 @@ const RegisterPage = () => {
             <button
               type="submit"
               className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
+              onClick={handleSubmit}
             >
               <span>Create Account</span>
               <ArrowRight className="w-5 h-5" />
@@ -183,8 +242,11 @@ const RegisterPage = () => {
           {/* Sign In Link */}
           <div className="text-center mt-6">
             <p className="text-slate-400">
-              Already have an account?{' '}
-              <button className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
+              Already have an account?{" "}
+              <button
+                className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+                onClick={handleSignIn}
+              >
                 Sign In
               </button>
             </p>

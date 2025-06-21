@@ -353,7 +353,6 @@ export default function FireTVVideoPlayer({
             </CardContent>
           </Card>
         </div>
-        )
       </div>
     </div>
   );

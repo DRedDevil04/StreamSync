@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, User, Lock, Tv, ArrowRight, Smartphone } from 'lucide-react';
+import { useAuthToken } from "../hooks/useAuthToken";
+import api from '@/utils/axiosInstance';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -9,6 +12,8 @@ const LoginPage = () => {
   });
   const [focusedField, setFocusedField] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const { setToken } = useAuthToken();
+  const  navigate  = useNavigate();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -17,10 +22,32 @@ const LoginPage = () => {
     }));
   };
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     console.log('Login data:', formData);
-    // Handle login logic here
+    try {
+      const res = await api.post("/auth/login", {
+          username: formData.username,
+          password: formData.password,
+        }
+      );
+      const token = res.data.token;
+      setToken(token); // sets cookie
+      navigate("/room");
+      console.log("✅ Login successful:", res);
+      alert(`Login successful! ${res}`);
+      document.location.href = "/room"; // Redirect to login page after successful registration
+      // You can redirect or show a success message here
+    } catch (error: any) {
+      console.error(
+        "❌ Login error:",
+        error.response?.data || error.message
+      );
+      alert(
+        "Login failed. " +
+          (error.response?.data?.message || error.message)
+      );
+    }
   };
 
   return (
@@ -132,7 +159,7 @@ const LoginPage = () => {
           <div className="text-center mt-6">
             <p className="text-slate-400">
               Don't have an account?{' '}
-              <button className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
+              <button className="text-blue-400 hover:text-blue-300 font-medium transition-colors" onClick={() => document.location.href = '/register'}>
                 Create Account
               </button>
             </p>
