@@ -11,5 +11,6 @@ const router = express.Router();
 router.use("/video", videoRoutes);
 router.use("/auth", authRoutes);
 router.use("/connections", friendsRoutes);
+router.use("/user",);
 
 export default router;
