@@ -4,6 +4,10 @@ import './App.css';
 import { RoomPage } from './pages/Room';
 import { JoinRoomPage } from './pages/JoinRoom';
 import { useParams } from 'react-router-dom';
+import RegisterPage from './pages/Register';
+import LoginPage from './pages/Login';
+import Footer from './components/Footer';
+import Navbar from './components/Navbar';
 
 const socket = io("http://localhost:3000");
 
@@ -19,11 +23,15 @@ function App() {
   return (
     <Router>
       <div className="App">
+        <Navbar />
         <Routes>
+          <Route path="/register" element={<RegisterPage/>} />
+          <Route path="/login" element={<LoginPage/>} />
           <Route path="/" element={<JoinRoomPage socket={socket} />} />
           <Route path="/room/:roomId" element={<RoomWrapper socket={socket} />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <Footer />
       </div>
     </Router>
   );
