@@ -1,31 +1,27 @@
-import { useEffect, useRef, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import io from 'socket.io-client';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import io, { Socket } from 'socket.io-client';
 import './App.css';
 import { RoomPage } from './pages/Room';
-import { JoinRoomPage } from './pages/JoinRoom'
+import { JoinRoomPage } from './pages/JoinRoom';
+import { useParams } from 'react-router-dom';
 
 const socket = io("http://localhost:3000");
 
-// Room wrapper to extract roomId from URL
-function RoomWrapper() {
-  const roomId = window.location.pathname.split('/room/')[1];
-  
-  if (!roomId) {
-    return <Navigate to="/" replace />;
-  }
+function RoomWrapper({ socket }: {socket: Socket}) {
+  const { roomId } = useParams();
+
+  if (!roomId) return <Navigate to="/" replace />;
   
   return <RoomPage roomId={decodeURIComponent(roomId)} socket={socket} />;
 }
 
-// Main App Component
 function App() {
   return (
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/room" element={<JoinRoomPage socket={socket}/>} />
-          <Route path="/room/:roomId" element={<RoomWrapper />} />
+          <Route path="/" element={<JoinRoomPage socket={socket} />} />
+          <Route path="/room/:roomId" element={<RoomWrapper socket={socket} />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>

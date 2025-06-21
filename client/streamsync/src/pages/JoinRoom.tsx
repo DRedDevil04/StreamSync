@@ -17,7 +17,7 @@ export function JoinRoomPage({ socket }: { socket: Socket }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-700 via-slate-900 to-slate-700 text-white">
       <div className="container mx-auto px-6 py-16">
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent">

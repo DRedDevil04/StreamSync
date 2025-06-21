@@ -1,14 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import '../App.css';
-import MovieChatDemo from '../components/Chat';
+import MovieChat from '../components/Chat';
 import FireTVVideoPlayer from '../components/VideoPlayback';
 import type { Socket } from 'socket.io-client';
+import { userInfo } from 'os';
 
 export function RoomPage({ roomId, socket }: { roomId: string , socket: Socket }) {
   const [joined, setJoined] = useState(false);
   const navigate = useNavigate();
-
+    const [userInfo, setUserInfo] = useState({
+        name: 'Guest',
+        color: '#ffffff',
+        id: 'guest-' + Math.random().toString(36).substring(2, 15)
+    });
 
   // Auto-join room when component mounts
   useEffect(() => {
@@ -25,7 +30,7 @@ export function RoomPage({ roomId, socket }: { roomId: string , socket: Socket }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-700 via-slate-900 to-slate-700">
       {/* Header */}
       <header className="bg-black/20 backdrop-blur-sm border-b border-slate-700">
         <div className="container mx-auto px-6 py-4">
@@ -69,7 +74,7 @@ export function RoomPage({ roomId, socket }: { roomId: string , socket: Socket }
                 </h3>
               </div>
               <div className="p-4">
-                <MovieChatDemo />
+                <MovieChat socket={socket} currentUser={userInfo} roomId={roomId}/>
               </div>
             </div>
           </div>
