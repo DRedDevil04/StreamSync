@@ -1,44 +1,49 @@
-const streamSocketEvents = function (io: any) {
-  io.on("connection", (socket: any) => {
-    console.log("🔌 Client connected:", socket.id);
+import { Socket } from "socket.io";
+import connectionStore from "./ConnectionStore";
 
-    let currentRoom: string | null = null;
-    let currentTime: number | null = null;
-    let isPlaying: boolean = false;
+const streamSocketEvents = function (socket: Socket, sessionId: string) {
+  if (!sessionId) {
+    console.error("❌ [Chat] No session ID provided, disconnecting socket.");
+    return socket.disconnect();
+  }
+  const info = connectionStore.get(sessionId);
 
-    socket.on("joinRoom", (roomId: string) => {
-      if (currentRoom) {
-        socket.leave(currentRoom);
-        console.log(`🔁 ${socket.id} left room: ${currentRoom}`);
-      }
-      currentRoom = roomId;
-      if (currentTime) isPlaying = false; // Reset playing state when joining a new room
-      socket.join(roomId);
-      console.log(`➡️ ${socket.id} joined room: ${roomId}`);
-    });
+  socket.on("joinRoom", (roomId: string) => {
+    if (info.currentRoom) {
+      socket.leave(info.currentRoom);
+      console.log(`🔁 ${socket.id} left room: ${info.currentRoom}`);
+    }
+    info.currentRoom = roomId;
+    // if (currentTime) isPlaying = false; // Reset playing state when joining a new room
+    socket.join(roomId);
+    console.log(`➡️ ${socket.id} joined room: ${roomId}`);
+  });
 
-    socket.on("play", () => {
-      if (currentRoom) {
-        socket.to(currentRoom).emit("play");
-        console.log(`▶️ ${socket.id} played in room: ${currentRoom}`);
-      }
-    });
+  socket.on("play", () => {
+    if (info.currentRoom) {
+      socket.to(info.currentRoom).emit("play");
+      console.log(`▶️ ${socket.id} played in room: ${info.currentRoom}`);
+    }
+  });
 
-    socket.on("pause", () => {
-      if (currentRoom) {
-        socket.to(currentRoom).emit("pause");
-        console.log(`⏸️ ${socket.id} paused in room: ${currentRoom}`);
-      }
-    });
+  socket.on("pause", () => {
+    if (info.currentRoom) {
+      socket.to(info.currentRoom).emit("pause");
+      console.log(`⏸️ ${socket.id} paused in room: ${info.currentRoom}`);
+    }
+  });
 
-    socket.on("seek", (time: number) => {
-      if (currentRoom) {
-      }
-    });
+  socket.on("seek", (time: number) => {
+    if (info.currentRoom) {
+      socket.to(info.currentRoom).emit("seek", time);
+      console.log(
+        `⏩ ${socket.id} seeked to ${time}s in room: ${info.currentRoom}`
+      );
+    }
+  });
 
-    socket.on("disconnect", () => {
-      console.log("❌ Client disconnected:", socket.id);
-    });
+  socket.on("disconnect", () => {
+    console.log("❌ Client disconnected:", socket.id);
   });
 };
 

@@ -4,8 +4,8 @@ import { Server as SocketIOServer } from "socket.io";
 import * as dotenv from "dotenv";
 import routes from "./router";
 import { connectToDatabase } from "./config/dbConfig"; // adjust path as needed
-import PlaybackEvents from "./sockets/PlaybackEvents.js"; // adjust path as needed
 import cors from "cors";
+import socketHandler from "./sockets";
 
 dotenv.config();
 
@@ -13,7 +13,6 @@ const app = express();
 const server = http.createServer(app);
 
 const dbUrl = process.env.DB_URL;
-console.log(process.env);
 if (!dbUrl) {
   console.error("❌ DB_URL is not defined in the environment variables");
   process.exit(1);
@@ -25,11 +24,11 @@ app.use(cors());
 // Create Socket.IO server
 const io = new SocketIOServer(server, {
   cors: {
-    origin: "*", // Allow connections from any origin (or set to "http://localhost:1235")
+    origin: "*", // your frontend address
     methods: ["GET", "POST"],
   },
 });
-
+console.log(`🔌 Socket.IO server created`);
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
@@ -45,7 +44,7 @@ app.use("/videos", express.static("videos"));
 app.use(express.static("public"));
 
 // Socket.IO handlers
-PlaybackEvents(io);
+socketHandler(io);
 
 server.listen(port, () => {
   console.log(`🚀 Server running at http://localhost:${port}`);
