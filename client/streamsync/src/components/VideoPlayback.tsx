@@ -25,7 +25,7 @@ export default function FireTVVideoPlayer({ socket , roomId }: { socket: Socket,
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(100);
+  const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [isBuffering, setIsBuffering] = useState(false);
@@ -36,7 +36,7 @@ export default function FireTVVideoPlayer({ socket , roomId }: { socket: Socket,
     if (video) {
       if (Hls.isSupported()) {
         const hls = new Hls();
-        video.volume=100
+        video.volume=1
         hls.loadSource(videoSrc);
         hls.attachMedia(video);
       } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
