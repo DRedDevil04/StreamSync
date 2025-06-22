@@ -289,6 +289,8 @@ const RoomCreationPage = () => {
   };
 
   const openEditModal = (room: any) => {
+    console.log("Room passed to openEditModal:", room);
+
     setEditingRoom(room);
     setRoomName(room.name);
     setRoomDescription(room.description);
@@ -537,7 +539,7 @@ const RoomCreationPage = () => {
                         <Copy className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => openEditModal(room)}
+                        onClick={() => +openEditModal(room)}
                         className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors"
                       >
                         <Edit3 className="w-4 h-4" />
