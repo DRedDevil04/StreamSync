@@ -31,5 +31,10 @@ export const handleRequests = async (
     await toUser.save();
   }
 
-  res.status(200).json({ message: `Request ${action}ed` });
+  res.status(200).json({
+    message: `Request ${action}ed`,
+    from_id: request.from,
+    to_id: request.to,
+    status: request.status,
+  });
 };

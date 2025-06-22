@@ -62,7 +62,7 @@ const ViewRequests: React.FC = () => {
       console.log(`Request ${action}ed successfully`);
 
       if (action === "accept") {
-        dispatch(addFriend(response.data.friend));
+        dispatch(addFriend(response.data.from_id));
       }
 
       // Remove the request from the state after successful handling

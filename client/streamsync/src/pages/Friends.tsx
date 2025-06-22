@@ -4,31 +4,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import FriendRequest from '@/components/FriendRequest';
 import ViewRequests from '@/components/ViewRequests';
 import FriendsList from '@/components/ListFriends';
-// Mock components - these would be imported from /components in your actual app
+import Groups from '@/components/Groups';
 
-const Groups = () => (
-  <div className="space-y-6">
-    <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
-      <h3 className="text-white text-lg font-semibold mb-4">Recommended Groups</h3>
-      <div className="space-y-3">
-        {['Gaming Enthusiasts', 'Movie Night Club', 'Tech Talk'].map((group) => (
-          <div key={group} className="flex items-center justify-between bg-slate-800/70 p-4 rounded-lg">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                <Users className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h4 className="text-white font-medium">{group}</h4>
-                <p className="text-slate-400 text-sm">142 members</p>
-              </div>
-            </div>
-            <ChevronRight className="w-5 h-5 text-slate-400" />
-          </div>
-        ))}
-      </div>
-    </div>
-  </div>
-);
 
 
 const FriendsPage = () => {

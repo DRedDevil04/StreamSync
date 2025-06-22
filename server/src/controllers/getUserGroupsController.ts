@@ -1,10 +1,7 @@
 import { Request, Response } from "express";
 import Group from "../models/Groups";
 
-const getUserGroups = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+const getUserGroups = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = req.user.id; // Assuming `req.user` contains the authenticated user's ID
 
@@ -15,7 +12,9 @@ const getUserGroups = async (
     );
 
     if (!groups || groups.length === 0) {
-      res.status(404).json({ message: "No groups found for the user" });
+      res
+        .status(404)
+        .json({ message: "No groups found for the user", groups: [] });
       return;
     }
 
