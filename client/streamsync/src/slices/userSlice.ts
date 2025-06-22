@@ -36,9 +36,14 @@ const userSlice = createSlice({
     },
     updateFriendsList(state, action: PayloadAction<string[]>) {
       state.friendsList = action.payload;
-    }
+    },
+    addFriend(state, action: PayloadAction<string>) {
+      if (!state.friendsList?.includes(action.payload)) {
+        state.friendsList?.push(action.payload);
+      }
+    },
   },
 });
 
-export const { setUser, clearUser, updateUsername, updateFriendsList } = userSlice.actions;
+export const { setUser, clearUser, updateUsername, updateFriendsList, addFriend } = userSlice.actions;
 export default userSlice.reducer;

@@ -13,6 +13,8 @@ import {
   X
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/store';
 
 const Navbar = () => {
   const [activeTab, setActiveTab] = useState('home');
@@ -21,6 +23,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const username = useSelector((state: RootState) => state.user.username);
 
   // Update active tab based on current route
   useEffect(() => {
@@ -223,8 +226,8 @@ const Navbar = () => {
                           <User className="w-5 h-5 text-white" />
                         </div>
                         <div>
-                          <p className="text-white font-medium">John Doe</p>
-                          <p className="text-slate-400 text-sm">john.doe@email.com</p>
+                          <p className="text-white font-medium">{username}</p>
+                          <p className="text-slate-400 text-sm">{username}</p>
                         </div>
                       </div>
                     </div>

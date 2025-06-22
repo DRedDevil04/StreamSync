@@ -26,12 +26,9 @@ const FriendsList: React.FC = () => {
   const fetchFriends = async (): Promise<void> => {
     try {
       setLoading(true);
-      
-      // Simulate API call
+
      const response = await api.get("/connections/friends")
         console.log('Fetched friends:', response.data.friends);
-      // Mock data - replace with actual API endpoint
-      
       
       setFriends(response.data.friends);
     } catch (err) {
