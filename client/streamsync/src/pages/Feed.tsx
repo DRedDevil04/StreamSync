@@ -1,6 +1,7 @@
 // pages/FeedPage.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../utils/axiosInstance'; // 🔁 Axios instance
 
 interface User {
   id: string;
@@ -45,65 +46,51 @@ const FeedPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Mock data - replace with API call
-    const mockFeedItems: FeedItem[] = [
-      {
-        id: '1',
-        type: 'watching',
-        user: { id: '1', username: 'john_doe', avatar: '/api/placeholder/40/40' },
-        movie: { id: '1', title: 'Inception', poster: '/api/placeholder/200/300', genre: 'Sci-Fi' },
-        room: { id: '1', name: 'Movie Night', participantCount: 3, isPublic: true },
-        timestamp: '2 minutes ago',
-        likes: 5,
-        isLiked: false,
-        canJoin: true
-      },
-      {
-        id: '2',
-        type: 'completed',
-        user: { id: '2', username: 'sarah_wilson', avatar: '/api/placeholder/40/40' },
-        movie: { id: '2', title: 'The Dark Knight', poster: '/api/placeholder/200/300', genre: 'Action' },
-        rating: 9,
-        comment: 'Absolutely incredible! Heath Ledger was phenomenal.',
-        timestamp: '1 hour ago',
-        likes: 12,
-        isLiked: true
-      },
-      {
-        id: '3',
-        type: 'room_created',
-        user: { id: '3', username: 'mike_jones', avatar: '/api/placeholder/40/40' },
-        movie: { id: '3', title: 'Parasite', poster: '/api/placeholder/200/300', genre: 'Thriller' },
-        room: { id: '2', name: 'Korean Cinema Night', participantCount: 1, isPublic: true },
-        timestamp: '3 hours ago',
-        likes: 8,
-        isLiked: false,
-        canJoin: true
-      },
-      {
-        id: '4',
-        type: 'room_joined',
-        user: { id: '4', username: 'alex_smith', avatar: '/api/placeholder/40/40' },
-        room: { id: '3', name: 'Horror Marathon', participantCount: 5, isPublic: false },
-        timestamp: '5 hours ago',
-        likes: 3,
-        isLiked: false
-      },
-      {
-        id: '5',
-        type: 'rating',
-        user: { id: '5', username: 'emma_davis', avatar: '/api/placeholder/40/40' },
-        movie: { id: '4', title: 'Interstellar', poster: '/api/placeholder/200/300', genre: 'Sci-Fi' },
-        rating: 10,
-        comment: 'Nolan\'s masterpiece. The science and emotion blend perfectly.',
-        timestamp: '1 day ago',
-        likes: 25,
-        isLiked: true
-      }
-    ];
+    const fetchFeed = async () => {
+      try {
+        setIsLoading(true);
+        const response = await api.get('/feed');
+        const feed = response.data.map((item: any) => ({
+          id: item._id,
+          type: item.type,
+          user: {
+            id: item.user._id,
+            username: item.user.userName,
+            avatar: item.user.avatar || '/api/placeholder/40/40'
+          },
+          movie: item.movie
+            ? {
+                id: item.movie._id,
+                title: item.movie.title,
+                poster: `/api/posters/${item.movie.attachmentID}`,
+                genre: item.movie.tags?.[0] || 'General'
+              }
+            : undefined,
+          room: item.room
+            ? {
+                id: item.room._id,
+                name: item.room.name || 'Room',
+                participantCount: item.room.participants?.length || 1,
+                isPublic: item.room.isPublic || false
+              }
+            : undefined,
+          rating: item.rating,
+          comment: item.comment,
+          timestamp: new Date(item.timestamp).toLocaleString(),
+          likes: item.likes,
+          isLiked: false, // Optional: add real liked info later
+          canJoin: item.room?.isPublic ?? false
+        }));
 
-    setFeedItems(mockFeedItems);
-    setIsLoading(false);
+        setFeedItems(feed);
+      } catch (error) {
+        console.error('Failed to load feed:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFeed();
   }, [timeFilter]);
 
   const handleLike = (itemId: string) => {
