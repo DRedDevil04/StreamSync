@@ -3,9 +3,14 @@ import Room from "../models/Room.js";
 // ✅ Create Room
 export const createRoom = async (req, res) => {
   try {
-    const { name, description, movie, mode, tags , maxCapacity } = req.body;
+    const { name, description, movie, mode, tags, maxCapacity, participants } =
+      req.body;
     const host = req.user.id; // assuming auth middleware
     const roomId = `${host}-${Date.now()}`; // generate unique roomId
+
+    const allParticipants = Array.from(
+      new Set([host, ...(participants || [])])
+    );
 
     const newRoom = await Room.create({
       roomId,
@@ -15,8 +20,8 @@ export const createRoom = async (req, res) => {
       movie,
       mode,
       tags,
-      participants: [host],
-      maxCapacity
+      participants: allParticipants,
+      maxCapacity,
     });
 
     res.status(201).json({ message: "Room created", room: newRoom });

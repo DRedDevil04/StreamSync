@@ -5,8 +5,13 @@ import deleteGroup from "../controllers/deleteGroupController";
 import addMemberToGroup from "../controllers/addMemberToGroupController";
 import removeMember from "../controllers/removeSomeoneController";
 import setGroupTags from "../controllers/editGroupTagsConctroller";
+import getUserGroups from "../controllers/getUserGroupsController";
+import { group } from "console";
 
 const groupRoutes = Router();
+
+//see all groups
+groupRoutes.get("/my-groups", authenticate, getUserGroups);
 
 // Route to create a group
 groupRoutes.post("/create", authenticate, createGroup);
