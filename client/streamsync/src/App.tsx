@@ -14,6 +14,7 @@ import MovieDetailsPage from './pages/MovieDetails';
 import WatchSoloPage from './pages/WatchSolo';
 import FeedPage from './pages/Feed';
 import RecommendationPage from './pages/Recommendation';
+import FriendsPage from './pages/Friends';
 // import FriendsPage from './pages/Friends';
 // import RoomsPage from './pages/Rooms';
 // import ProfilePage from './pages/Profile';
@@ -38,6 +39,7 @@ function App() {
           <Route path="/home" element={<HomePage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/friends" element={<FriendsPage/>} />
           <Route path="/" element={<JoinRoomPage socket={socket} />} />
           <Route
             path="/streaming"

@@ -24,4 +24,3 @@ FriendsRoutes.post("/requests/handle", authenticate, handleRequests);
 FriendsRoutes.delete("/friends/remove", authenticate, removeFriend);
 
 export default FriendsRoutes;
-
