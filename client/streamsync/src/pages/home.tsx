@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store';
-import api from '@/utils/axiosInstance';
 import RecommendedMovies from '@/components/RecommendedMovies';
 
 interface Movie {
@@ -20,57 +19,54 @@ const HomePage = () => {
   const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
-  const username = useSelector((state: RootState) => state.user.username)
   const user = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
-    // if (!user || user.id === null) return;
-    console.log(user)
-    if (!user.isAuthenticated || !user.id) {
-      navigate('/login');
-      return;
-    }
+    const mockMovies: Movie[] = [
+      {
+        id: '1',
+        title: 'Inception',
+        attachmentId: 'https://image.tmdb.org/t/p/w500/qmDpIHrmpJINaRKAfWQfftjCdyi.jpg',
+        tags: ['Sci-Fi', 'Thriller'],
+        rating: 8.8,
+        duration: '148',
+      },
+      {
+        id: '2',
+        title: 'The Dark Knight',
+        attachmentId: 'https://image.tmdb.org/t/p/w500/rqAHkvXldb9tHlnbQDwOzRi0yVD.jpg',
+        tags: ['Action', 'Crime'],
+        rating: 9.0,
+        duration: '152',
+      },
+      {
+        id: '3',
+        title: 'Interstellar',
+        attachmentId: 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
+        tags: ['Adventure', 'Drama'],
+        rating: 8.6,
+        duration: '169',
+      },
+    ];
 
-    const fetchWatchedMovies = async () => {
-      console.log("JEJJ")
-      try {
-        const res = await api.get(`/users/${user.id}/watched`);
-        const transformedWatched = res.data.map((movie: any) => ({
-          id: movie._id || movie.id,
-          title: movie.title,
-          attachmentId: movie.attachmentId || movie.attachmentID || '/placeholder-movie.jpg',
-          tags: movie.tags || [],
-          rating: movie.rating || movie.Rating || 0,
-          duration: movie.duration,
-        }));
-        console.log(transformedWatched)
-        setWatchedMovies(transformedWatched);
-      } catch (err) {
-        console.error("Failed to fetch user data:", err);
-        setError("Failed to load your movies");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchWatchedMovies();
-  }, [navigate, user]);
+    setWatchedMovies(mockMovies);
+    setLoading(false);
+  }, []);
 
   const handleMovieClick = (movieId: string) => {
     navigate(`/movie/${movieId}`);
   };
 
-  // if (loading) {
-  //   return (
-  //     <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
-  //       <div className="text-xl">Loading your movies...</div>
-  //     </div>
-  //   );
-  // }
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+        <div className="text-xl">Loading your movies...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
-      {/* Hero Section */}
       <div className="relative h-96 bg-gradient-to-r from-purple-900 to-blue-900 flex items-center">
         <div className="container mx-auto px-6">
           <h1 className="text-5xl font-bold mb-4">Welcome Back!</h1>
@@ -85,7 +81,7 @@ const HomePage = () => {
           </div>
         )}
 
-        {/* Continue Watching Section */}
+        {/* Continue Watching */}
         {watchedMovies.length > 0 && (
           <div className="mb-12">
             <h2 className="text-2xl font-bold mb-6">Continue Watching</h2>
@@ -112,7 +108,7 @@ const HomePage = () => {
                   <div className="p-4">
                     <h3 className="text-lg font-semibold truncate">{movie.title}</h3>
                     <div className="text-sm text-gray-400 truncate">
-                      {Array.isArray(movie.tags) ? movie.tags.join(', ') : movie.tags}
+                      {movie.tags.join(', ')}
                     </div>
                     <div className="flex items-center justify-between mt-2">
                       <div className="text-sm text-gray-400">⭐ {movie.rating}</div>
@@ -125,10 +121,8 @@ const HomePage = () => {
           </div>
         )}
 
-        {/* Recommended Movies Section */}
-        {user.id && (
-          <RecommendedMovies userIds={[user.id]} title="Recommended For You" />
-        )}
+        {/* ✅ Show Recommended Movies Always */}
+        <RecommendedMovies title="Recommended For You" />
 
         {/* Fallback if user has no watched movies */}
         {watchedMovies.length === 0 && (
@@ -150,3 +144,49 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
+
+// useEffect(() => {
+  //   // if (!user || user.id === null) return;
+  //   console.log(user)
+  //   if (!user.isAuthenticated || !user.id) {
+  //     navigate('/login');
+  //     return;
+  //   }
+
+  //   const fetchWatchedMovies = async () => {
+  //     console.log("JEJJ")
+  //     try {
+  //       const res = await api.get(`/users/${user.id}/watched`);
+  //       const transformedWatched = res.data.map((movie: any) => ({
+  //         id: movie._id || movie.id,
+  //         title: movie.title,
+  //         attachmentId: movie.attachmentId || movie.attachmentID || '/placeholder-movie.jpg',
+  //         tags: movie.tags || [],
+  //         rating: movie.rating || movie.Rating || 0,
+  //         duration: movie.duration,
+  //       }));
+  //       console.log(transformedWatched)
+  //       setWatchedMovies(transformedWatched);
+  //     } catch (err) {
+  //       console.error("Failed to fetch user data:", err);
+  //       setError("Failed to load your movies");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchWatchedMovies();
+  // }, [navigate, user]);
+
+  // const handleMovieClick = (movieId: string) => {
+  //   navigate(`/movie/${movieId}`);
+  // };
+
+  // if (loading) {
+  //   return (
+  //     <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+  //       <div className="text-xl">Loading your movies...</div>
+  //     </div>
+  //   );
+  // }
