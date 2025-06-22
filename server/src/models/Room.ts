@@ -6,9 +6,18 @@ const RoomSchema = new mongoose.Schema({
     unique: true,
     required: true,
   },
+  name: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
   host: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
+    required: true,
   },
   participants: [
     {
@@ -16,10 +25,15 @@ const RoomSchema = new mongoose.Schema({
       ref: "User",
     },
   ],
-  movieId: String,
+  movie: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Movie", // Reference to the Movie model
+    required: true,
+  },
   mode: {
     type: String,
     enum: ["public", "private"],
+    required: true,
   },
   tags: [String],
   isActive: {
@@ -29,6 +43,10 @@ const RoomSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  maxCapacity: {
+    type: Number,
+    default: 10,
   },
 });
 

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, User, Mail, Lock, Tv, ArrowRight } from "lucide-react";
-import axios from "axios";
-
+import api from "../utils/axiosInstance"; // Adjust the import path as necessary
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -26,16 +25,13 @@ const RegisterPage = () => {
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
       return;
-    } 
+    }
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/auth/register",
-        {
-          username: formData.username,
-          email: formData.email,
-          password: formData.password,
-        }
-      );
+      const response = await api.post("/auth/register", {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+      });
 
       console.log("✅ Registration successful:", response.data);
       alert("Registration successful! Please log in.");

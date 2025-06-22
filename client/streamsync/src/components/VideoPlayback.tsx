@@ -38,7 +38,7 @@ export default function FireTVVideoPlayer({
 
   useEffect(() => {
     const video = videoRef.current;
-    const videoSrc = "http://localhost:3000/api/video/sample.m3u8";
+    const videoSrc = "http://localhost:5000/api/video/sample.m3u8";
     if (video) {
       if (Hls.isSupported()) {
         const hls = new Hls();
@@ -189,7 +189,6 @@ export default function FireTVVideoPlayer({
 
       {/* Main Content */}
       <div className="container mx-auto px-6 py-8">
-      
         <div className="space-y-6">
           {/* Video Player */}
           <div
