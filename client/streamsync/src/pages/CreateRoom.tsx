@@ -8,8 +8,6 @@ import {
   Lock,
   Globe,
   Film,
-  Search,
-  Star,
   UserPlus,
   Send,
   X,
@@ -55,63 +53,78 @@ const RoomCreationPage = () => {
   const [myRooms, setMyRooms] = useState([]);
   const [publicRooms, setPublicRooms] = useState([]);
 
-  // Mock movies data - in real app, this would come from your Movie API
-  const [popularMovies] = useState([
-    {
-      _id: "6857a95f69be7a22b9d2a1db",
-      title: "The Dark Knight",
-      year: 2008,
-      rating: 9.0,
-      genre: "Action",
-      duration: "152 min",
-      thumbnail: "🦇",
-    },
-    {
-      _id: "2",
-      title: "Inception",
-      year: 2010,
-      rating: 8.8,
-      genre: "Sci-Fi",
-      duration: "148 min",
-      thumbnail: "🌀",
-    },
-    {
-      _id: "3",
-      title: "Interstellar",
-      year: 2014,
-      rating: 8.6,
-      genre: "Sci-Fi",
-      duration: "169 min",
-      thumbnail: "🌌",
-    },
-    {
-      _id: "4",
-      title: "Pulp Fiction",
-      year: 1994,
-      rating: 8.9,
-      genre: "Crime",
-      duration: "154 min",
-      thumbnail: "💼",
-    },
-    {
-      _id: "5",
-      title: "The Matrix",
-      year: 1999,
-      rating: 8.7,
-      genre: "Action",
-      duration: "136 min",
-      thumbnail: "💊",
-    },
-    {
-      _id: "6",
-      title: "Forrest Gump",
-      year: 1994,
-      rating: 8.8,
-      genre: "Drama",
-      duration: "142 min",
-      thumbnail: "🏃",
-    },
-  ]);
+  // Add these state variables to your existing state declarations
+  const [memberSelectionType, setMemberSelectionType] = useState("friends"); // 'friends' or 'groups'
+  const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+
+  // State variables for friends and groups with loading states
+  const [mockFriends, setMockFriends] = useState<any[]>([]);
+  const [mockGroups, setMockGroups] = useState<any[]>([]);
+  const [friendsLoading, setFriendsLoading] = useState(true);
+  const [groupsLoading, setGroupsLoading] = useState(true);
+
+  // Fetch friends and groups on component mount
+  useEffect(() => {
+    const fetchFriends = async () => {
+      try {
+        setFriendsLoading(true);
+        const response = await api.get("/connections/friends");
+        console.log("Friends API response:", response.data);
+
+        // Handle different possible response structures
+        const friendsData = response.data?.friends || response.data || [];
+        console.log("Processed friends data:", friendsData);
+
+        if (Array.isArray(friendsData)) {
+          setMockFriends(friendsData);
+        } else {
+          console.warn("Friends data is not an array:", friendsData);
+          setMockFriends([]);
+        }
+      } catch (error) {
+        console.error("Error fetching friends:", error);
+        setMockFriends([]);
+      } finally {
+        setFriendsLoading(false);
+      }
+    };
+
+    const fetchGroups = async () => {
+      try {
+        setGroupsLoading(true);
+        const response = await api.get("/group/my-groups");
+        console.log("Groups API response:", response.data);
+
+        // Handle different possible response structures
+        const groupsData =
+          response.data?.groups ||
+          response.data?.friends ||
+          response.data ||
+          [];
+        console.log("Processed groups data:", groupsData);
+
+        if (Array.isArray(groupsData)) {
+          setMockGroups(groupsData);
+        } else {
+          console.warn("Groups data is not an array:", groupsData);
+          setMockGroups([]);
+        }
+      } catch (error) {
+        console.error("Error fetching groups:", error);
+        setMockGroups([]);
+      } finally {
+        setGroupsLoading(false);
+      }
+    };
+
+    // Fetch both concurrently
+    Promise.all([fetchFriends(), fetchGroups()]);
+  }, []);
+
+  useEffect(() => {
+    console.log("mockFriends:", mockFriends);
+  }, [mockFriends]);
 
   // API call to create room
   const createRoomAPI = async (roomData: any) => {
@@ -175,10 +188,6 @@ const RoomCreationPage = () => {
     }
   };
 
-  const filteredMovies = popularMovies.filter((movie) =>
-    movie.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   // Add tag functionality
   const addTag = () => {
     if (currentTag.trim() && !tags.includes(currentTag.trim())) {
@@ -199,8 +208,16 @@ const RoomCreationPage = () => {
   };
 
   const createRoom = async () => {
-    if (!roomName || !selectedMovie) {
-      setError("Please fill in all required fields");
+    // Updated validation - check for members instead of movie
+    if (
+      !roomName ||
+      (memberSelectionType === "friends" && selectedFriends.length === 0) ||
+      (memberSelectionType === "groups" &&
+        (!selectedGroup ||
+          mockGroups.find((group) => group.id === selectedGroup)?.members
+            .length === 0))
+    ) {
+      setError("Please fill in all required fields and select members");
       return;
     }
 
@@ -211,10 +228,16 @@ const RoomCreationPage = () => {
       const roomData = {
         name: roomName,
         description: roomDescription,
-        movie: selectedMovie._id,
-        mode: roomType, // 'public' or 'private'
+        movie: selectedMovie?._id, // This might be null now, adjust based on your backend
+        mode: roomType,
         tags: tags,
-        maxCapacity: maxUsers, // You might need to add this to your schema
+        maxCapacity: maxUsers,
+        // Add member data
+        participants:
+          memberSelectionType === "friends"
+            ? selectedFriends
+            : mockGroups.find((group) => group.id === selectedGroup)?.members ||
+              [],
       };
 
       const newRoom = await createRoomAPI(roomData);
@@ -242,6 +265,10 @@ const RoomCreationPage = () => {
     setMaxUsers(10);
     setTags([]);
     setCurrentTag("");
+    // Add these new reset lines
+    setMemberSelectionType("friends");
+    setSelectedFriends([]);
+    setSelectedGroup(null);
   };
 
   const deleteRoom = async (roomId: any) => {
@@ -262,6 +289,8 @@ const RoomCreationPage = () => {
   };
 
   const openEditModal = (room: any) => {
+    console.log("Room passed to openEditModal:", room);
+
     setEditingRoom(room);
     setRoomName(room.name);
     setRoomDescription(room.description);
@@ -510,7 +539,7 @@ const RoomCreationPage = () => {
                         <Copy className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => openEditModal(room)}
+                        onClick={() => +openEditModal(room)}
                         className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors"
                       >
                         <Edit3 className="w-4 h-4" />
@@ -626,16 +655,6 @@ const RoomCreationPage = () => {
           <div className="bg-slate-900 rounded-2xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold">Create New Room</h2>
-              <button
-                onClick={() => {
-                  setShowCreateRoom(false);
-                  resetForm();
-                  setError("");
-                }}
-                className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -762,55 +781,161 @@ const RoomCreationPage = () => {
                 </div>
               </div>
 
-              {/* Movie Selection */}
+              {/* Add Members Section */}
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold">Select Movie *</h3>
-                  <div className="relative">
-                    <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search movies..."
-                      className="bg-slate-800 text-white rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
-                    />
+                  <h3 className="text-lg font-semibold">Add Members *</h3>
+                  <div className="flex bg-slate-800 rounded-lg p-1">
+                    <button
+                      onClick={() => setMemberSelectionType("friends")}
+                      className={`px-4 py-2 rounded-lg text-sm transition-colors ${
+                        memberSelectionType === "friends"
+                          ? "bg-blue-600 text-white"
+                          : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      Friends
+                    </button>
+                    <button
+                      onClick={() => setMemberSelectionType("groups")}
+                      className={`px-4 py-2 rounded-lg text-sm transition-colors ${
+                        memberSelectionType === "groups"
+                          ? "bg-blue-600 text-white"
+                          : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      Groups
+                    </button>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-3 max-h-96 overflow-y-auto">
-                  {filteredMovies.map((movie) => (
-                    <div
-                      key={movie._id}
-                      onClick={() => setSelectedMovie(movie)}
-                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                        selectedMovie?._id === movie._id
-                          ? "border-blue-600 bg-blue-600/20"
-                          : "border-slate-700 hover:border-slate-600 bg-slate-800/50"
-                      }`}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="text-3xl">{movie.thumbnail}</div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-semibold">{movie.title}</h4>
-                            <span className="text-xs text-slate-400">
-                              ({movie.year})
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-4 text-sm text-slate-400">
-                            <span>{movie.genre}</span>
-                            <span>{movie.duration}</span>
-                            <div className="flex items-center gap-1">
-                              <Star className="w-3 h-3 text-yellow-500" />
-                              <span>{movie.rating}</span>
+                {memberSelectionType === "friends" ? (
+                  <div className="max-h-96 overflow-y-auto">
+                    <div className="space-y-2">
+                      {mockFriends.map((friend) => (
+                        <div
+                          key={friend._id} // Use _id as the unique key
+                          onClick={() => {
+                            if (selectedFriends.includes(friend._id)) {
+                              // Remove the friend from the selected list
+                              setSelectedFriends((prevSelected) =>
+                                prevSelected.filter((id) => id !== friend._id)
+                              );
+                            } else {
+                              // Add the friend to the selected list
+                              setSelectedFriends((prevSelected) => [
+                                ...prevSelected,
+                                friend._id,
+                              ]);
+                            }
+                          }}
+                          className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                            selectedFriends.includes(friend._id)
+                              ? "border-blue-600 bg-blue-600/20"
+                              : "border-slate-700 hover:border-slate-600 bg-slate-800/50"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                              {friend.username.charAt(0)}
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-semibold">
+                                {friend.username}
+                              </h4>
+                              <p className="text-sm text-slate-400">
+                                {friend.email}
+                              </p>
+                            </div>
+                            <div
+                              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                                selectedFriends.includes(friend._id)
+                                  ? "border-blue-600 bg-blue-600"
+                                  : "border-slate-600"
+                              }`}
+                            >
+                              {selectedFriends.includes(friend._id) && (
+                                <div className="w-2 h-2 bg-white rounded-full"></div>
+                              )}
                             </div>
                           </div>
                         </div>
-                      </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                    {selectedFriends.length > 0 && (
+                      <div className="mt-4 p-3 bg-slate-800 rounded-lg">
+                        <p className="text-sm text-slate-300">
+                          Selected {selectedFriends.length} friend
+                          {selectedFriends.length > 1 ? "s" : ""}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="max-h-96 overflow-y-auto">
+                    <div className="space-y-2">
+                      {mockGroups.map((group) => (
+                        <div
+                          key={group.id}
+                          onClick={() =>
+                            setSelectedGroup(
+                              group.id === selectedGroup ? null : group.id
+                            )
+                          }
+                          className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                            selectedGroup === group.id
+                              ? "border-blue-600 bg-blue-600/20"
+                              : "border-slate-700 hover:border-slate-600 bg-slate-800/50"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
+                              {group.name.charAt(0)}
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-semibold">{group.name}</h4>
+                              <p className="text-sm text-slate-400">
+                                {group.memberCount} members
+                              </p>
+                              <p className="text-xs text-slate-500 mt-1">
+                                {group.description}
+                              </p>
+                            </div>
+                            <div
+                              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                                selectedGroup === group.id
+                                  ? "border-blue-600 bg-blue-600"
+                                  : "border-slate-600"
+                              }`}
+                            >
+                              {selectedGroup === group.id && (
+                                <div className="w-2 h-2 bg-white rounded-full"></div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    {selectedGroup && (
+                      <div className="mt-4 p-3 bg-slate-800 rounded-lg">
+                        <p className="text-sm text-slate-300">
+                          Selected group:{" "}
+                          {mockGroups.find((g) => g.id === selectedGroup)?.name}
+                        </p>
+                        <p className="text-xs text-slate-400">
+                          Members:{" "}
+                          {mockGroups
+                            .find((g) => g.id === selectedGroup)
+                            ?.members.map(
+                              (memberId) =>
+                                mockFriends.find((f) => f.id === memberId)?.name
+                            )
+                            .join(", ")}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -827,7 +952,13 @@ const RoomCreationPage = () => {
               </button>
               <button
                 onClick={createRoom}
-                disabled={!roomName || !selectedMovie || loading}
+                disabled={
+                  !roomName ||
+                  loading ||
+                  (memberSelectionType === "friends" &&
+                    selectedFriends.length === 0) ||
+                  (memberSelectionType === "groups" && !selectedGroup)
+                }
                 className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-8 py-3 rounded-lg transition-colors flex items-center gap-2"
               >
                 {loading && (
