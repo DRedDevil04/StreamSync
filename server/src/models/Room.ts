@@ -28,7 +28,6 @@ const RoomSchema = new mongoose.Schema({
   movie: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Movie", // Reference to the Movie model
-    required: true,
   },
   mode: {
     type: String,
