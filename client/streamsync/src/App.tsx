@@ -18,7 +18,6 @@ import StreamingPage from "./pages/Streaming";
 import MovieDetailsPage from "./pages/MovieDetails";
 import WatchSoloPage from "./pages/WatchSolo";
 import FeedPage from "./pages/Feed";
-import RecommendationPage from "./pages/Recommendation";
 import FriendsPage from "./pages/Friends";
 // import FriendsPage from './pages/Friends';
 // import RoomsPage from './pages/Rooms';
@@ -104,27 +103,6 @@ function App() {
                         duration: 169,
                       },
                     ],
-                  },
-                ]}
-              />
-            }
-          />
-          <Route
-            path="/grouprecommendation"
-            element={
-              <RecommendationPage
-                roomId="123"
-                users={[
-                  { id: "u1", name: "Alice", preferences: ["Sci-Fi", "Drama"] },
-                  {
-                    id: "u2",
-                    name: "Bob",
-                    preferences: ["Action", "Thriller"],
-                  },
-                  {
-                    id: "u3",
-                    name: "Charlie",
-                    preferences: ["Comedy", "Romance"],
                   },
                 ]}
               />
