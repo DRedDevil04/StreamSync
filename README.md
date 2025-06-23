@@ -75,7 +75,7 @@ Amazon HackOn Project for collaborative FireTV and Social Streaming
 
 | Name         | Role                | Fun Fact                        |
 |--------------|---------------------|---------------------------------|
-| Devam        | Lead Dev            | Codes in his sleep              |
+| Devam        | Dev                 | Codes in his sleep              |
 | Nitu         | Recommendations     | A living ML model               |
 | Arpit        | Backend Wizard      | Speaks fluent JSON              |
 
