@@ -17,8 +17,10 @@ import {
   Edit3,
 } from "lucide-react";
 import api from "../utils/axiosInstance";
+import type { Socket } from "socket.io-client";
+import { useNavigate } from "react-router-dom";
 
-const RoomCreationPage = () => {
+const RoomCreationPage = ({ socket }: { socket: Socket }) => {
   const [showCreateRoom, setShowCreateRoom] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -38,6 +40,7 @@ const RoomCreationPage = () => {
     duration: string;
     thumbnail: string;
   } | null>(null);
+
   const [roomName, setRoomName] = useState("");
   const [roomDescription, setRoomDescription] = useState("");
   const [roomType, setRoomType] = useState("public");
@@ -63,6 +66,7 @@ const RoomCreationPage = () => {
   const [mockGroups, setMockGroups] = useState<any[]>([]);
   const [friendsLoading, setFriendsLoading] = useState(true);
   const [groupsLoading, setGroupsLoading] = useState(true);
+  const navigate = useNavigate();
 
   // Fetch friends and groups on component mount
   useEffect(() => {
@@ -341,10 +345,11 @@ const RoomCreationPage = () => {
     }
   };
 
-  const joinRoom = (roomId: any) => {
-    console.log("Joining room:", roomId);
-    // Navigate to the streaming room
-    // window.location.href = `/room/${roomId}`;
+  const joinRoom = (roomId: string) => {
+    if (roomId.trim()) {
+      socket.emit("joinRoom", roomId.trim());
+      navigate(`/room/${roomId.trim()}`);
+    }
   };
 
   const copyRoomLink = (roomId: any) => {
@@ -927,7 +932,7 @@ const RoomCreationPage = () => {
                           {mockGroups
                             .find((g) => g.id === selectedGroup)
                             ?.members.map(
-                              (memberId) =>
+                              (memberId: any) =>
                                 mockFriends.find((f) => f.id === memberId)?.name
                             )
                             .join(", ")}

@@ -74,7 +74,7 @@ export function RoomPage({ roomId, socket }: { roomId: string , socket: Socket }
                 </h3>
               </div>
               <div className="p-4">
-                <MovieChat socket={socket} currentUser={userInfo} roomId={roomId}/>
+                <MovieChat socket={socket} userColor={userInfo.color} roomId={roomId}/>
               </div>
             </div>
           </div>

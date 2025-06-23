@@ -118,6 +118,13 @@ const Navbar = () => {
       active: activeTab === 'friends',
       displayName: 'Friends',
       badge: 3 // notification badge
+    },
+    {
+      name: 'createroom',
+      icon: Tv,
+      active: activeTab === 'room',
+      displayName: 'Room',
+
     }
   ];
 

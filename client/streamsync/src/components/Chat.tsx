@@ -5,6 +5,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Send, Users, MessageSquare,Wifi, WifiOff } from 'lucide-react';
 import type { Socket } from 'socket.io-client';
+import { useSelector } from 'react-redux';
 
 interface User {
   id: string;
@@ -21,7 +22,7 @@ interface Message {
 }
 
 
-export default function MovieChat ({ socket, currentUser, roomId }: { socket: Socket, currentUser: User, roomId: string }) {
+export default function MovieChat ({ socket, userColor, roomId }: { socket: Socket, userColor: string, roomId: string }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [connectedUsers, setConnectedUsers] = useState<User[]>([]);
@@ -29,6 +30,7 @@ export default function MovieChat ({ socket, currentUser, roomId }: { socket: So
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const currentUser = useSelector((state: any) => state.user);
 
   const activeSocket = socket
 
@@ -104,7 +106,7 @@ export default function MovieChat ({ socket, currentUser, roomId }: { socket: So
     });
     const message: Message = {
       id: Date.now().toString() + Math.random(),
-      user: currentUser.name,
+      user: currentUser.username,
       text: newMessage.trim(),
       timestamp: new Date().toISOString(),
       type: 'message'
@@ -124,7 +126,7 @@ export default function MovieChat ({ socket, currentUser, roomId }: { socket: So
   };
 
   const getUserColor = (userName: string) => {
-    if (userName === currentUser.name) return currentUser.color;
+    if (userName === currentUser.name) return userColor;
     if (userName === 'System') return '#ff9500';
     
     // Generate consistent color based on username
@@ -174,7 +176,7 @@ export default function MovieChat ({ socket, currentUser, roomId }: { socket: So
                 className="text-xs font-bold text-white"
                 style={{ backgroundColor: currentUser.color }}
               >
-                {currentUser.name.charAt(0).toUpperCase()}
+                {currentUser.username.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
           </div>

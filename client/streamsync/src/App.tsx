@@ -41,12 +41,12 @@ function App() {
       <div className="App">
         <Navbar />
         <Routes>
-          <Route path="/home" element={<HomePage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/friends" element={<FriendsPage />} />
-          <Route path="/" element={<JoinRoomPage socket={socket} />} />
-          <Route path="/createRoom" element={<RoomCreationPage />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/rooms" element={<JoinRoomPage socket={socket} />} />
+          <Route path="/createRoom" element={<RoomCreationPage socket={socket} />} />
           <Route
             path="/streaming"
             element={
