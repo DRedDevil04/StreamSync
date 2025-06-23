@@ -76,9 +76,8 @@ Amazon HackOn Project for collaborative FireTV and Social Streaming
 | Name         | Role                | Fun Fact                        |
 |--------------|---------------------|---------------------------------|
 | Devam        | Lead Dev            | Codes in his sleep              |
-| Alice        | UX/UI               | Can design with her eyes closed |
-| Bob          | Backend Wizard      | Speaks fluent JSON              |
-| Carol        | FireTV Guru         | Alexa is her BFF                |
+| Nitu         | Recommendations     | A living ML model               |
+| Arpit        | Backend Wizard      | Speaks fluent JSON              |
 
 ---
 
